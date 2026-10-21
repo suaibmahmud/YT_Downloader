@@ -12,4 +12,4 @@ source venv/bin/activate
 
 pip install customtkinter yt-dlp pillow requests fake-useragent pyinstaller
 
-pyinstaller --noconsole --onefile --windowed --icon=icon.icns --name="YT_Downloader" main.py
+python3 build.py
