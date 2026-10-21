@@ -1,15 +1,34 @@
 import os
-import imageio_ffmpeg
-import random
+import sys
 import threading
 from tkinter import filedialog, messagebox
 import customtkinter as ctkinter
 from fake_useragent import UserAgent
+import imageio_ffmpeg
 import yt_dlp
 
 # UI থিম সেটআপ
 ctkinter.set_appearance_mode("System")  # লাইট বা ডার্ক মোড অটোমেটিক নিবে
 ctkinter.set_default_color_theme("blue")  # থিম কালার
+
+
+# 🍏 ম্যাক অ্যাপের জন্য FFmpeg-এর সঠিক পাথ খুঁজে বের করার ফাংশন
+def get_safe_ffmpeg_path():
+    try:
+        # অ্যাপ যদি PyInstaller দিয়ে বিল্ড করা হয়, তবে তার ইন্টারনাল পাথ নিবে
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+            # PyInstaller সাধারণত প্যাকেজগুলো এভাবে ভেতরে রাখে
+            possible_path = os.path.join(base_path, 'imageio_ffmpeg', 'binaries')
+            if os.path.exists(possible_path):
+                for file in os.listdir(possible_path):
+                    if file.startswith("ffmpeg"):
+                        return os.path.join(possible_path, file)
+        
+        # ভিএস কোডে নরমাল রান করার সময় ডিফল্ট লাইব্রেরি পাথ নিবে
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception:
+        return "ffmpeg" # কোনো কারণে না পেলে গ্লোবাল সিস্টেম পাথ ট্রাই করবে
 
 
 class YouTubeDownloaderApp(ctkinter.CTk):
