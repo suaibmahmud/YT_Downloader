@@ -37,7 +37,7 @@ class YouTubeDownloaderApp(ctkinter.CTk):
         super().__init__()
 
         # উইন্ডো কনফিগারেশন (রিসাইজেবল এবং রেসপন্সিভ)
-        self.title("Premium YouTube Downloader")
+        self.title("YouTube Downloader")
         self.geometry("700x550")
         self.minsize(600, 450)
 
@@ -63,7 +63,7 @@ class YouTubeDownloaderApp(ctkinter.CTk):
         # ২. ইউআরএল ইনপুট বক্স
         self.url_entry = ctkinter.CTkEntry(
             self,
-            placeholder_text="এখানে ইউটিউব ভিডিওর লিঙ্ক পেস্ট করুন...",
+            placeholder_text="Paste the YouTube video link here...",
             height=45,
         )
         self.url_entry.grid(row=1, column=0, padx=30, pady=10, sticky="ew")
@@ -74,13 +74,13 @@ class YouTubeDownloaderApp(ctkinter.CTk):
         self.path_frame.grid_columnconfigure(0, weight=1)
 
         self.path_label = ctkinter.CTkLabel(
-            self, text=f"সংরক্ষণ হবে: {self.download_path}", anchor="w"
+            self, text=f"Preservation will take place: {self.download_path}", anchor="w"
         )
         self.path_label.grid(row=2, column=0, padx=35, pady=0, sticky="w")
 
         self.browse_btn = ctkinter.CTkButton(
             self.path_frame,
-            text="ফোল্ডার পরিবর্তন করুন",
+            text="Change the folder",
             command=self.browse_folder,
             width=150,
         )
@@ -92,19 +92,19 @@ class YouTubeDownloaderApp(ctkinter.CTk):
         self.option_frame.grid_columnconfigure((0, 1), weight=1)
 
         self.type_label = ctkinter.CTkLabel(
-            self.option_frame, text="ডাউনলোড টাইপ:"
+            self.option_frame, text="Download type:"
         )
         self.type_label.grid(row=0, column=0, padx=15, pady=10, sticky="w")
 
         self.type_combo = ctkinter.CTkComboBox(
             self.option_frame,
-            values=["Video (ভিডিও)", "Audio Only (শুধু অডিও)"],
+            values=["Video", "Audio Only"],
             command=self.update_quality_options,
         )
         self.type_combo.grid(row=0, column=0, padx=120, pady=10, sticky="ew")
 
         self.quality_label = ctkinter.CTkLabel(
-            self.option_frame, text="কোয়ালিটি সিলেক্ট করুন:"
+            self.option_frame, text="Select quality:"
         )
         self.quality_label.grid(row=0, column=1, padx=15, pady=10, sticky="w")
 
@@ -124,7 +124,7 @@ class YouTubeDownloaderApp(ctkinter.CTk):
         # ৬. ডাউনলোড বাটন
         self.download_btn = ctkinter.CTkButton(
             self,
-            text="ডাউনলোড শুরু করুন",
+            text="Start the download",
             font=ctkinter.CTkFont(size=16, weight="bold"),
             height=50,
             fg_color="#24a0ed",
@@ -137,7 +137,7 @@ class YouTubeDownloaderApp(ctkinter.CTk):
         selected_dir = filedialog.askdirectory()
         if selected_dir:
             self.download_path = selected_dir
-            self.path_label.configure(text=f"সংরক্ষণ হবে: {self.download_path}")
+            self.path_label.configure(text=f"Preservation will take place: {self.download_path}")
 
     def update_quality_options(self, choice):
         if "Audio" in choice:
@@ -161,21 +161,21 @@ class YouTubeDownloaderApp(ctkinter.CTk):
             speed = d.get("_speed_str", "0B/s")
             eta = d.get("_eta_str", "00:00")
             self.progress_label.configure(
-                text=f"ডাউনলোড হচ্ছে... গতি: {speed} | বাকি সময়: {eta}"
+                text=f"Downloading... Speed: {speed} | বাকি সময়: {eta}"
             )
         elif d["status"] == "finished":
             self.progress_label.configure(
-                text="ডাউনলোড শেষ! ফাইল প্রসেস করা হচ্ছে..."
+                text="Download complete! File is being processed..."
             )
 
     def start_download_thread(self):
         # UI হ্যাং হওয়া আটকাতে ব্যাকগ্রাউন্ড থ্রেডে ডাউনলোড চালানো
         url = self.url_entry.get().strip()
         if not url:
-            messagebox.showerror("Error", "দয়া করে একটি সঠিক লিঙ্ক দিন!")
+            messagebox.showerror("Error", "Please provide a valid link!")
             return
 
-        self.download_btn.configure(state="disabled", text="দয়া করে অপেক্ষা করুন...")
+        self.download_btn.configure(state="disabled", text="Please wait...")
         threading.Thread(target=self.download_media, args=(url,), daemon=True).start()
 
     def download_media(self, url):
@@ -231,13 +231,13 @@ class YouTubeDownloaderApp(ctkinter.CTk):
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 ydl.download([url])
             self.progress_bar.set(1)
-            self.progress_label.configure(text="ডাউনলোড সফলভাবে সম্পন্ন হয়েছে!")
-            messagebox.showinfo("Success", "আপনার ফাইলটি সফলভাবে ডাউনলোড হয়েছে!")
+            self.progress_label.configure(text="The download has been completed successfully!")
+            messagebox.showinfo("Success", "Your file has been downloaded successfully!")
         except Exception as e:
-            self.progress_label.configure(text="ডাউনলোড ব্যর্থ হয়েছে।")
-            messagebox.showerror("Download Error", f"একটি সমস্যা হয়েছে:\n{str(e)}")
+            self.progress_label.configure(text="Download failed.")
+            messagebox.showerror("Download Error", f"A problem has occurred:\n{str(e)}")
         finally:
-            self.download_btn.configure(state="normal", text="ডাউনলোড শুরু করুন")
+            self.download_btn.configure(state="normal", text="Start the download")
 
 
 
